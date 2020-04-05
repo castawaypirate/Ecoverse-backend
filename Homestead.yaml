@@ -15,7 +15,7 @@ sites:
         map: backend.test
         to: /home/vagrant/code/public
 databases:
-    - homestead
+    - backend
 features:
     -
         mariadb: false
