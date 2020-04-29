@@ -11,3 +11,6 @@
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
+
+#phpmyadmin
+public/[pP][hH][pP][mM][yY][aA][dD][mM][iI][nN]
