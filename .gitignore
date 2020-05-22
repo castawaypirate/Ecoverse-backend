@@ -14,3 +14,6 @@ yarn-error.log
 
 #phpmyadmin
 public/[pP][hH][pP][mM][yY][aA][dD][mM][iI][nN]
+
+Homestead.json
+.vagrant
