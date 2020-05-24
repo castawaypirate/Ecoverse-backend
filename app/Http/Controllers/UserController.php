@@ -15,15 +15,6 @@ class UserController extends Controller
 
     public function index()
     {
-        // $all = User::find(1);
-        // echo $all->getData()->get()[0]->user_id;
-        echo 'hello'=='hello';
-        // $all = User::all();
-        // echo $all;
-        // $cars=array("Volvo","BMW","Toyota");
-        // return view("Demos")->with('all',$all);
-
-        // return view('demos');
     }
 
     public function create(Request $request)
@@ -57,7 +48,6 @@ class UserController extends Controller
             {
                 DB::commit();
                 return response(['user'=>$user,'accessToken'=>$accessToken]);
-                // return response()->json($request);
             }
             else
             {
@@ -112,12 +102,6 @@ class UserController extends Controller
             return response([$user,$userdata]);
         }
         return response(['message'=>'Wrong password']);
-        // $user = User::find($id);
-        // $user->username = $request->input('username');
-        // $user->password = $request->input('password');
-        // $user->role = $request->input('role');
-        // $user->save();
-        // return response()->json($request);
 
     }
 

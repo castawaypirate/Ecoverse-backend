@@ -28,5 +28,3 @@ Route::delete('/userdelete/{id}','UserController@delete');
 
 Route::get('/userget/{id}','UserController@get');
 
-Route::post('/userdata','UserDataController@create');
-
