@@ -22,3 +22,6 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/home2', 'FriendController@getAllFriends')->name('home2');
+
+Route::resource('posts','PostController');
+Route::resource('events', 'EventController');
