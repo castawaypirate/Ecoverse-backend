@@ -15,9 +15,8 @@ class CreateUsersDataTable extends Migration
     public function up()
     {
         Schema::create('users_data', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->bigIncrements('id');
+            $table->bigInteger('user_id')->unsigned();
             $table->string('name')->nullable();
             $table->string('surname')->nullable();
             $table->string('email')->unique();
@@ -26,6 +25,10 @@ class CreateUsersDataTable extends Migration
             $table->date('birthday')->nullable();
             $table->string('location',50)->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('users_data', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

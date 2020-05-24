@@ -5,10 +5,9 @@ namespace App\Http\Controllers;
 use App\User;
 use App\UserData;
 use Illuminate\Http\Request;
-use DB;
 use Auth;
 use Hash;
-use Symfony\Component\Config\Definition\Exception\Exception;
+
 
 class UserController extends Controller
 {
@@ -21,44 +20,28 @@ class UserController extends Controller
     {
         $user = new User();
         $userdata = new UserData();
-        DB::beginTransaction();
-        try
-        {
-            $request->validate(([
-                'username' => 'required|max:55',
-                'email' => 'email|required',
-                'password' => 'required|confirmed'
-            ]));
+        $request->validate(([
+            'username' => 'required|max:55',
+            'email' => 'email|required',
+            'password' => 'required|confirmed'
+        ]));
 
-            $user->username = $request->input('username');
+        $user->username = $request->input('username');
 
-            $password = Hash::make($request->password);
-            $user->password = $password;
+        $password = Hash::make($request->password);
+        $user->password = $password;
 
-            $user->role = $request->input('role');
-            $user->save();
+        $user->role = $request->input('role');
+        $user->save();
 
-            $userdata->email = $request->input('email');
-            $userdata->user_id = $user->id;
-            $userdata->save();
+        $userdata->email = $request->input('email');
+        $userdata->user_id = $user->id;
+        $userdata->save();
 
-            $accessToken = $user->createToken('authToken')->accessToken;
+        $accessToken = $user->createToken('authToken')->accessToken;
 
-            if($user && $userdata)
-            {
-                DB::commit();
-                return response(['user'=>$user,'accessToken'=>$accessToken]);
-            }
-            else
-            {
-                DB::rollback();
-            }
-        }
-        catch(Exception $ex)
-        {
-            DB::rollback();
-            return redirect()->back();
-        }
+        return response(['user'=>$user,'accessToken'=>$accessToken]);
+
     }
 
     public function login(Request $request)
