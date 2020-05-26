@@ -14,15 +14,17 @@ class CreateTeamMembersTable extends Migration
     public function up()
     {
         Schema::create('team__members', function (Blueprint $table) {
-            $table->id('id');
-            $table->unsignedInteger('user_id');
-            $table->unsignedInteger('team_id');
-            $table->string('role',30)->nullable();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('team_id');
+            $table->string('role',20)->nullable();
             $table->timestamps();
+        });
+      //  Schema::create('team__members', function (Blueprint $table){
 
             //$table->foreign('user_id')->references('id')->on('user');
             //$table->foreign('team_id')->references('id')->on('teams');
-        });
+      //  });
     }
 
     /**

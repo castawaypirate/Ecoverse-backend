@@ -14,7 +14,7 @@ class EventMemberController extends Controller
      */
     public function index()
     {
-       
+       //
     }
 
     /**
@@ -39,9 +39,14 @@ class EventMemberController extends Controller
             'decision' => ['required']
             
         ]);
+        //find event_id
+
         if(var_dump(filter_var($decision, FILTER_VALIDATE_BOOLEAN))){
         $eventMember = new EventMember();
         $eventMember = save();
+
+        return response('You have successfully joined the event')->json(
+            $eventMember->toArray());
         }
     }
 
@@ -53,7 +58,7 @@ class EventMemberController extends Controller
      */
     public function show($id)
     {
-        $team_Member = Team_Member::find($id);
+       //
     }
 
     /**
@@ -87,12 +92,15 @@ class EventMemberController extends Controller
      */
     public function destroy($id)
     {
+        //find event_id
+
         $eventMember = EventMember::find($id);
         $request->validate([
             'decision' => ['required']
         ]);
         if (!(var_dump(filter_var($decision, FILTER_VALIDATE_BOOLEAN)))){
             $eventMember->delete();
+            return response(['message'=>'You have been removed from the event']);
         }
     }
 }

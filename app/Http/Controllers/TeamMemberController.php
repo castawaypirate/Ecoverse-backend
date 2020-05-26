@@ -40,6 +40,8 @@ class TeamMemberController extends Controller
 
         $team_Member = new Team_Member();
         $team_Member->save();
+        return response('You have successfully joined the team')->json(
+            $team_Member->toArray());
     }
 
     /**
@@ -50,7 +52,7 @@ class TeamMemberController extends Controller
      */
     public function show($id)
     {
-        $team_Member = Team_Member::find($id);
+       
     }
 
     /**
@@ -73,9 +75,14 @@ class TeamMemberController extends Controller
      */
     public function update(Request $request,$id)
     {
-        //
+        $team_Member = Team_Member::find($id);
+        if($team_Member->role = 'admin' || $team_Member->role = 'administrator')
+        { 
+            $team_Member->role = $request->input('role');
+            return response(['message'=>'You have successfully updated your role!']);
+        }
+        return response(['message'=>'You must be an admin to perform this action']);
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -86,5 +93,6 @@ class TeamMemberController extends Controller
     {
         $team_Member = Team_Member::find($id);
         $team_Member->delete();
+        return response(['message'=>'You have been removed from the team']);
     }
 }
