@@ -15,7 +15,7 @@ class EventController extends Controller
      */
     public function index()
     {
-        return Event::all()->collect();
+        return Event::all()->toJson();
     }
 
     /**
@@ -25,7 +25,7 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+        return response("Create Event");
     }
 
     /**
@@ -61,6 +61,7 @@ class EventController extends Controller
 
         $post->save();
         $event->save();
+        return response("Event successfully created!");
     }
 
     /**
@@ -71,7 +72,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        //
+        return Event::find($id)->toJson();
     }
 
     /**
@@ -83,7 +84,7 @@ class EventController extends Controller
     public function edit($id)
     {
         $event = Event::find($id);
-        //
+        return response("Edit Event");
     }
 
     /**
@@ -104,19 +105,27 @@ class EventController extends Controller
         ]);
 
         $event = Event::find($id);
-        $post = Post::find($event->getAttribute('post_id'));
+        $post = Post::find($event->post_id);
 
         $post->content = $request->get('content');
         $post->author = $request->get('author');
-        $post->public =$request->has('public');
-        $post->image = $request->get('image');
-        $post->team_id = $request->get('team_id');
+        if($request->has('public')) {
+            $post->public = $request->has('public');
+        }
+        if($request->has('image')) {
+            $post->image = $request->get('image');
+        }
+        if($request->has('team_id')) {
+            $post->team_id = $request->get('team_id');
+        }
         $post->save();
 
         $event->start = $request->get('start');
         $event->end = $request->get('end');
         $event->place = $request->get('place');
         $event->save();
+
+        return response("Event successfully updated!");
 
     }
 
@@ -130,5 +139,6 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $event->delete();
+        return response("Event successfully deleted!");
     }
 }
