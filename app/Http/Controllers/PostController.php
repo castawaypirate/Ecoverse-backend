@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Post;
 use Illuminate\Http\Request;
 use function GuzzleHttp\Promise\all;
+use function MongoDB\BSON\toJSON;
 
 class PostController extends Controller
 {
@@ -15,7 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::all()->collect();
+        return Post::all()->toJson();
     }
 
     /**
@@ -25,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return response("Post create page");
     }
 
     /**
@@ -44,12 +45,14 @@ class PostController extends Controller
         $post = new Post([
             'author'=>$request->get('author'),
             'content'=>$request->get('content'),
-            'public'=> $request->has('public'),
+            'public'=> $request->get('public'),
             'image'=>$request->get('image'),
             'team_id'=>$request->get('team_id')
         ]);
 
         $post->save();
+
+        return response("Post successfully created");
     }
 
     /**
@@ -60,7 +63,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        return Post::find(id)->toJson();
     }
 
     /**
@@ -72,7 +75,7 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::find($id);
-        //
+        return response("Post edit page");
     }
 
     /**
@@ -85,19 +88,25 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content'=>'required',
-            'author'=>'required',
+            'content' => 'required',
+            'author' => 'required',
         ]);
-
-        echo var_dump($request->get('public'));
 
         $post = Post::find($id);
         $post->content = $request->get('content');
         $post->author = $request->get('author');
-        $post->public =$request->has('public');
-        $post->image = $request->get('image');
-        $post->team_id = $request->get('team_id');
+        if ($request->has('public')) {
+            $post->public = $request->get('public');
+        }
+        if ($request->has('image')) {
+            $post->image = $request->get('image');;
+        }
+        if ($request->has('team_id')) {
+            $post->team_id = $request->get('team_id');
+        }
         $post->save();
+
+        return response("Post successfully updated!");
     }
 
     /**
@@ -110,5 +119,6 @@ class PostController extends Controller
     {
         $post = Post::find($id);
         $post->delete();
+        return response("Post successfully deleted!");
     }
 }
