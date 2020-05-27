@@ -18,15 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/usercreate','UserController@create');
-
-Route::post('/userlogin','UserController@login');
-
-Route::put('/userupdate/{id}','UserController@update');
-
-Route::delete('/userdelete/{id}','UserController@delete');
-
-Route::get('/userget/{id}','UserController@get');
-
-Route::post('/userdata','UserDataController@create');
+Route::prefix('/users')->group(function () {
+    Route::get('/{id}', 'UserController@get');
+    Route::post('/create', 'UserController@create');
+    Route::post('/login', 'UserController@login');
+    Route::put('/{id}', 'UserController@update');
+    Route::delete('/{id}', 'UserController@delete');
+});
 
