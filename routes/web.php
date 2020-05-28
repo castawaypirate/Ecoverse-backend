@@ -22,7 +22,3 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/home2', 'FriendController@getAllFriends')->name('home2');
-
-// Route::resource('/team_members','TeamMemberController');
-
-// Route::resource('/eventmembers','EventMemberController');
