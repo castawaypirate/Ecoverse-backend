@@ -8,7 +8,7 @@ keys:
     - ~/.ssh/id_rsa
 folders:
     -
-        map: /home/nosenz/Desktop/authProjects/backend
+        map: ./
         to: /home/vagrant/code
 sites:
     -
