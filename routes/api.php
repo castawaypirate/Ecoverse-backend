@@ -26,3 +26,33 @@ Route::prefix('posts')->group(function () {
 });
 
 Route::resource('events', 'EventController');
+
+Route::prefix('/events')->group(function () {
+    Route::get('/', 'EventController@index')->name('events');
+    Route::post('/', 'EventController@store')->name('event');
+    Route::put('/{id}', 'EventController@update')->name('update');
+    Route::delete('/{id}', 'EventController@destroy')->name('delete');
+});
+
+
+Route::get('/eventmembers','EventMemberController@index');
+
+Route::post('/neweventmember','EventMemberController@store');
+
+Route::delete('/eventmembers/{id}','EventMemberController@destroy');
+
+Route::get('/teammembers','TeamMemberController@index');
+
+Route::post('/newteammember','TeamMemberController@store');
+
+Route::delete('/team_member/{id}','TeamMemberController@destroy');
+
+Route::put('/team_member/{id}','TeamMemberController@update');
+
+Route::prefix('/users')->group(function () {
+    Route::get('/{id}', 'UserController@get');
+    Route::post('/create', 'UserController@create');
+    Route::post('/login', 'UserController@login');
+    Route::put('/{id}', 'UserController@update');
+    Route::delete('/{id}', 'UserController@delete');
+});
