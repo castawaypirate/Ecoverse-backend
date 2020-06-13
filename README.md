@@ -4,7 +4,7 @@ The project is build on Laravel 6, and it utilizes [Homestead](https://laravel.c
 
 After cloning the repository, you'll first have to install dependencies: 
 
-    $ composer install 
+    $ composer install
     
 and then bring up Homestead with: 
        
@@ -15,6 +15,10 @@ connect to vm's terminal with:
     $ vagrant ssh
 
 and run every command inside the vm
+
+In order to be able to make requests to api you need to run
+
+    $ php artisan passport:install
     
 You'll find Homestead's configuration in `./Homestead.yaml`
 
