@@ -96,4 +96,4 @@ To run the database migrations, use:
     
 To refresh all database migrations (which will erase all data), use:
 
-    ./artisan migrate
+    ./artisan migrate:refresh
