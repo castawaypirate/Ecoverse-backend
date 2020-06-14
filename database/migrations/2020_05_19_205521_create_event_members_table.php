@@ -15,13 +15,13 @@ class CreateEventMembersTable extends Migration
     {
         Schema::create('event_members', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('event_id');
+            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('event_id')->unsigned();
             $table->boolean('decision')->default(0);
             $table->timestamps();
         });
      // Schema::create('event_members', function (Blueprint $table) {
-          
+
             //$table->foreign('user_id')->references('id')->on('user');
             //$table->foreign('event_id')->references('id')->on('event');
     // });

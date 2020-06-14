@@ -18,7 +18,7 @@ class CreateEventsTable extends Migration
             $table->dateTime('start');
             $table->dateTime('end');
             $table->string('place', 50);
-            $table->unsignedBigInteger('post_id');
+            $table->bigInteger('post_id')->unsigned();
             $table->timestamps();
         });
 
