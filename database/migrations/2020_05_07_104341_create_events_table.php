@@ -23,7 +23,7 @@ class CreateEventsTable extends Migration
         });
 
         Schema::table('events', function (Blueprint $table) {
-            //$table->foreign('post_id')->references('id')->on('posts');
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
         });
     }
 

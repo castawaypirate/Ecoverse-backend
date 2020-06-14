@@ -14,6 +14,7 @@ class CreateTeamPosts extends Migration
     public function up()
     {
         Schema::create('team_posts', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->bigInteger('team_id')->unsigned();
             $table->bigInteger('post_id')->unsigned();
         });

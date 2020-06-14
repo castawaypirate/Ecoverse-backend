@@ -16,11 +16,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Team extends Model
 {
-    public function users() {
+    public function members() {
         return $this->belongsToMany(User::class, "team_members", "team_id", "user_id");
     }
 
     public function posts() {
-        return $this->hasManyThrough(Post::class, "team_posts", "team_id", "id", "id", "post_id");
+        return $this->hasManyThrough(Post::class, TeamPosts::class, "team_id", "id", "id", "post_id");
     }
 }
