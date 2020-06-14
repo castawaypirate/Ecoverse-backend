@@ -41,18 +41,27 @@ Route::post('/neweventmember','EventMemberController@store');
 
 Route::delete('/eventmembers/{id}','EventMemberController@destroy');
 
-Route::get('/teammembers','TeamMemberController@index');
-
-Route::post('/newteammember','TeamMemberController@store');
-
-Route::delete('/team_member/{id}','TeamMemberController@destroy');
-
-Route::put('/team_member/{id}','TeamMemberController@update');
-
 Route::prefix('/users')->group(function () {
     Route::get('/{id}', 'UserController@get');
     Route::post('/create', 'UserController@create');
     Route::post('/login', 'UserController@login');
     Route::put('/{id}', 'UserController@update');
     Route::delete('/{id}', 'UserController@delete');
+});
+
+Route::prefix('/team')->group(function () {
+    Route::get('/', 'TeamController@read');
+    Route::post('/create', 'TeamController@store');
+    Route::get('/{team_id}', 'TeamController@readOne')->middleware('member.actions:create');
+    Route::post('/{team_id}/edit', 'TeamController@update')->middleware('member.actions:edit');
+    Route::post('/{team_id}/delete', 'TeamController@destroy')->middleware('member.actions:delete');
+    Route::prefix('/{team_id}/members')->group(function() {
+        Route::post('/create', 'TeamMemberController@store')->middleware('member.actions:create');
+        Route::post('/{member_id}/edit', 'TeamMemberController@update')->middleware('member.actions:create');
+        Route::post('/{member_id}/delete', 'TeamMemberController@destroy')->middleware('member.actions:create');
+    });
+});
+
+Route::prefix('/team_member')->group(function () {
+    Route::delete('/{member_id}', 'TeamMemberController@destroy');
 });

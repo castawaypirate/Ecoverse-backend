@@ -4,7 +4,7 @@ The project is build on Laravel 6, and it utilizes [Homestead](https://laravel.c
 
 After cloning the repository, you'll first have to install dependencies: 
 
-    $ composer install 
+    $ composer install
     
 and then bring up Homestead with: 
        
@@ -15,8 +15,14 @@ connect to vm's terminal with:
     $ vagrant ssh
 
 and run every command inside the vm
-    
+
 You'll find Homestead's configuration in `./Homestead.yaml`
+
+In order to be able to make requests to api you need to run
+
+    $ php artisan passport:install --uuids
+
+Read more in `https://laravel.com/docs/7.x/passport`
 
 You will also have to update your `hosts` file to point the domain `backend.test` to the virtual machines's IP:
 
@@ -26,14 +32,14 @@ You can make a symlink of phpmyadmin in public folder or download it from `https
 
     http://backend.test/phpmyadmin
 
-For better ide intellisense run the following command:
-
-    php artisan ide-helper:meta
-
 For automatic docs run the following commands:
 
-    php artisan ide-helper:generate
-    php artisan ide-helper:models
+    $ php artisan ide-helper:generate
+    $ php artisan ide-helper:models
+
+For better ide intellisense run the following command:
+
+    $ php artisan ide-helper:meta
     
 Finally, you'll need a `.env` for local configuration. Here's an example: 
 
@@ -90,4 +96,4 @@ To run the database migrations, use:
     
 To refresh all database migrations (which will erase all data), use:
 
-    ./artisan migrate
+    ./artisan migrate:refresh

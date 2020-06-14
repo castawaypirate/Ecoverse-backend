@@ -16,7 +16,6 @@ class CreatePosts extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table-> bigIncrements("id");
             $table->string("author", 50);
-            $table->unsignedBigInteger('team_id')->nullable();
             $table->text("content");
             $table->string("image")->nullable();
             $table->boolean("public")->default(0);
