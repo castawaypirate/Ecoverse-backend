@@ -15,4 +15,7 @@ class Post extends Model
         'public'
     ];
 
+    public function comments() {
+        return $this->hasMany(Comment::class);
+    }
 }

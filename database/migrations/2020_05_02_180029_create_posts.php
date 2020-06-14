@@ -15,7 +15,7 @@ class CreatePosts extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table-> bigIncrements("id");
-            $table->string("author", 50);
+            $table->bigInteger("author_id")->unsigned();
             $table->text("content");
             $table->string("image")->nullable();
             $table->boolean("public")->default(0);
@@ -23,7 +23,7 @@ class CreatePosts extends Migration
         });
 
         Schema::table('posts', function (Blueprint $table) {
-          //  $table->foreign('team_id')->references('id')->on('teams');
+           $table->foreign('author_id')->references('id')->on('users');
         });
     }
 
