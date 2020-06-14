@@ -31,7 +31,7 @@ class TeamController extends Controller
     public function readOne($team_id) {
         $team = Team::where('id', $team_id);
 
-        if ($team->public) {
+        if ($team->first()->public) {
             $team = $team->with('posts');
         } else {
             $user = Auth::user();
@@ -43,7 +43,10 @@ class TeamController extends Controller
             }
         }
 
-        return response()->json($team->get());
+        return response()->json([
+            'message' => $team_id,
+            'data' =>   $team->get()
+        ]);
     }
 
     /**
@@ -86,7 +89,7 @@ class TeamController extends Controller
     public function update(Request $request, $team_id)
     {
         $request->validate([
-            'publish' => ['boolean']
+            'public' => ['boolean']
         ]);
 
         $team = Team::find($team_id);
@@ -99,8 +102,8 @@ class TeamController extends Controller
             $team->description = $request->description;
         }
 
-        if (isset($request->publish)) {
-            $team->publish = $request->publish;
+        if (isset($request->public)) {
+            $team->public = $request->public;
         }
 
         return response()->json(
