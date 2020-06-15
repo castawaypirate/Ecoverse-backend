@@ -15,6 +15,10 @@ class Comment extends Model
     }
 
     public function comments() {
-        return $this->firstLevelComments()->with('comments');
+        return $this->firstLevelComments()->with(['comments','likes']);
+    }
+
+    public function likes() {
+        $this->hasMany(Like::class);
     }
 }

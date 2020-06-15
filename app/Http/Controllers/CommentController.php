@@ -56,7 +56,7 @@ class CommentController extends Controller
     }
 
     public function getAllComments($comment_id) {
-        $comments = Comment::where('comment_id', $comment_id)->with('comments');
+        $comments = Comment::where('comment_id', $comment_id)->with(['comments', 'likes']);
 
         return response()->json([
             $comments->get()
@@ -74,6 +74,26 @@ class CommentController extends Controller
 
         return response()->json([
             'Successful deletion of comment'
+        ]);
+    }
+
+    public function handleLike($id) {
+        $user = Auth::user();
+        $like = Like::where('comment_id', $id)->where('user_id', $user->id);
+
+        if (!$like) {
+            $like = new Like();
+            $like->comment_id = $id;
+            $like->user_id = $user->id;
+            $like->save();
+            $message = 'Succesfully add like to comment';
+        } else {
+            $like->delete();
+            $message = 'Successfully remove like from comment';
+        }
+
+        return response()->json([
+            'message' => $message
         ]);
     }
 }

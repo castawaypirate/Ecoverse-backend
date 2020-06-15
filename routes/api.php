@@ -23,6 +23,7 @@ Route::prefix('posts')->group(function () {
     Route::delete('/{id}', 'PostController@destroy')->name('delete');
     Route::put('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
+    Route::post('/{id}/handle_like', 'PostController@handleLike');
 
 });
 
@@ -72,4 +73,5 @@ Route::prefix('/comments')->group(function () {
     Route::post('/{id}/edit', 'CommentController@edit');
     Route::post('/{id}/createAnswer', 'CommentController@createAnswer');
     Route::delete('/{id}', 'CommentController@destroy');
+    Route::post('/{id}/handle_like', 'CommentController@handleLike');
 });
