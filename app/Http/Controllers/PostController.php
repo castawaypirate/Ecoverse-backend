@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Post;
+use Auth;
 use Illuminate\Http\Request;
 use function GuzzleHttp\Promise\all;
 use function MongoDB\BSON\toJSON;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -63,7 +69,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return Post::find(id)->toJson();
+        return Post::with('comments')->find($id)->toJson();
     }
 
     /**
@@ -120,5 +126,24 @@ class PostController extends Controller
         $post = Post::find($id);
         $post->delete();
         return response("Post successfully deleted!");
+    }
+
+    public function addComment(Request $request, $post_id) {
+        $request->validate([
+            'content' => 'required'
+        ]);
+
+        $user = Auth::user();
+
+        $comment = new Comment();
+        $comment->author_id = $user->id;
+        $comment->post_id = $post_id;
+        $comment->content = $request->content;
+        $comment->save();
+
+        return response()->json([
+            'message' => 'Successful creation of comment',
+            'comment' => $comment
+        ]);
     }
 }

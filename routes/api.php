@@ -22,6 +22,7 @@ Route::prefix('posts')->group(function () {
     Route::post('/', 'PostController@store')->name('create');
     Route::delete('/{id}', 'PostController@destroy')->name('delete');
     Route::put('/{id}', 'PostController@update')->name('update');
+    Route::post('/{id}/add_comment', 'PostController@addComment');
 
 });
 
@@ -64,4 +65,11 @@ Route::prefix('/team')->group(function () {
 
 Route::prefix('/team_member')->group(function () {
     Route::delete('/{member_id}', 'TeamMemberController@destroy');
+});
+
+Route::prefix('/comments')->group(function () {
+    Route::get('/{id}/comments', 'CommentController@getAllComments');
+    Route::post('/{id}/edit', 'CommentController@edit');
+    Route::post('/{id}/createAnswer', 'CommentController@createAnswer');
+    Route::delete('/{id}', 'CommentController@destroy');
 });
