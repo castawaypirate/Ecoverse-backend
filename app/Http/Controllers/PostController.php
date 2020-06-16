@@ -69,7 +69,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return Post::with('comments')->find($id)->toJson();
+        return Post::with(['comments','likes'])->with('likes')->find($id)->toJson();
     }
 
     /**
@@ -144,6 +144,26 @@ class PostController extends Controller
         return response()->json([
             'message' => 'Successful creation of comment',
             'comment' => $comment
+        ]);
+    }
+
+    public function handleLike($id) {
+        $user = Auth::user();
+        $like = Like::where('post_id', $id)->where('user_id', $user->id);
+
+        if (!$like) {
+            $like = new Like();
+            $like->post_id = $id;
+            $like->user_id = $user->id;
+            $like->save();
+            $message = 'Succesfully add like to post';
+        } else {
+            $like->delete();
+            $message = 'Successfully remove like from post';
+        }
+
+        return response()->json([
+            'message' => $message
         ]);
     }
 }
