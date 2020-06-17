@@ -7,6 +7,7 @@ use App\UserData;
 use Illuminate\Http\Request;
 use Auth;
 use Hash;
+use Validator;
 
 
 class UserController extends Controller
@@ -18,11 +19,17 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
+
+        Validator::extend('valid_username', function($attr, $value){
+
+            return preg_match('/^\S*$/u', $value);
+
+        });
         $user = new User();
         $userdata = new UserData();
         $request->validate(([
-            'username' => 'required|max:55',
-            'email' => 'email|required',
+            'username' => 'required|max:55|valid_username|min:4|unique:users,username',
+            'email' => 'required|email|max:255|unique:users_data,email',
             'password' => 'required|confirmed'
         ]));
 
@@ -109,6 +116,6 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $userdata = UserData::where('user_id','=',$id)->firstOrFail();
-        return response()->json([$user,$userdata]);
+        return response()->json($user);
     }
 }
