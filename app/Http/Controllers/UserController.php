@@ -19,7 +19,6 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-
         Validator::extend('valid_username', function($attr, $value){
 
             return preg_match('/^\S*$/u', $value);
@@ -69,12 +68,17 @@ class UserController extends Controller
 
     public function update(Request $request,$id)
     {
-        $request->validate(([
-            'password' => 'required'
-        ]));
+        Validator::extend('valid_username', function($attr, $value){
+            return preg_match('/^\S*$/u', $value);
+        });
 
         $user = User::find($id);
         $userdata = UserData::where('user_id','=',$id)->firstOrFail();
+
+        $request->validate(([
+            'password' => 'required',
+            'username' => 'max:55|valid_username|min:4|unique:users,username,'. $user->id,
+        ]));
 
         if(Hash::check($request->password, $user->password))
         {
@@ -112,10 +116,17 @@ class UserController extends Controller
         return response((['message'=>'Wrong password']));
     }
 
-    public function get($id)
+    public function getUser($id)
     {
         $user = User::find($id);
         $userdata = UserData::where('user_id','=',$id)->firstOrFail();
         return response()->json($user);
+    }
+
+    public function getUserData($id)
+    {
+        $user = User::find($id);
+        $userdata = UserData::where('user_id','=',$id)->firstOrFail();
+        return response()->json($userdata);
     }
 }

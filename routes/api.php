@@ -44,7 +44,8 @@ Route::post('/neweventmember','EventMemberController@store');
 Route::delete('/eventmembers/{id}','EventMemberController@destroy');
 
 Route::prefix('/users')->group(function () {
-    Route::get('/{id}', 'UserController@get');
+    Route::get('/{id}', 'UserController@getUser');
+    Route::get('/data/{id}', 'UserController@getUserData');
     Route::post('/create', 'UserController@create');
     Route::post('/login', 'UserController@login');
     Route::put('/{id}', 'UserController@update');
