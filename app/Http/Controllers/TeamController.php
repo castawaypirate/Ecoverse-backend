@@ -44,8 +44,7 @@ class TeamController extends Controller
         }
 
         return response()->json([
-            'message' => $team_id,
-            'data' =>   $team->get()
+            $team->get()
         ]);
     }
 
@@ -126,18 +125,48 @@ class TeamController extends Controller
         ]);
     }
 
-    public function createMember(Request $request, $team_id) {
+    public function getMembers($team_id) {
+        $team = new Team($team_id);
+        $members = $team->load('members')->get();
+
+        return response()->json($members);
+    }
+
+    private function createMember($user_id, $team_id) {
+        $member = new TeamMember();
+        $member->user_id = $user_id;
+        $member->team_id = $team_id;
+        $member->role_id = config('teamMemberRoles.simpleMember');
+        $member->save();
+    }
+
+    public function addMember(Request $request, $team_id) {
         $request->validate([
             'user_id' => ['required']
         ]);
 
         $user = User::find($request->user_id);
 
-        $member = new TeamMember();
-        $member->user_id = $user->id;
-        $member->team_id = $team_id;
-        $member->role_id = config('teamMemberRoles.simpleMember');
-        $member->save();
+        $this->createMember($user->id, $team_id);
+
+        return response()->json([
+            'message' => 'Successful addition of member'
+        ]);
+    }
+
+    public function addMembers(Request $request, $team_id) {
+        $request->validate([
+            'user_ids' => ['required']
+        ]);
+
+        foreach ($request->user_ids as $user_id) {
+            $user = User::find($user_id);
+            $this->createMember($user->id, $team_id);
+        }
+
+        return response()->json([
+            'message' => 'Successful addition of members'
+        ]);
     }
 
     public function editMember(Request $request, $team_id, $member_id) {

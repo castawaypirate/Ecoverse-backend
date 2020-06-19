@@ -57,11 +57,13 @@ Route::prefix('/team')->group(function () {
     Route::post('/create', 'TeamController@store');
     Route::get('/{team_id}', 'TeamController@readOne')->middleware('member.actions:create');
     Route::post('/{team_id}/edit', 'TeamController@update')->middleware('member.actions:edit');
-    Route::post('/{team_id}/delete', 'TeamController@destroy')->middleware('member.actions:delete');
+    Route::delete('/{team_id}', 'TeamController@destroy')->middleware('member.actions:delete');
     Route::prefix('/{team_id}/members')->group(function() {
-        Route::post('/create', 'TeamMemberController@store')->middleware('member.actions:create');
+        Route::get('/', 'TeamController@getMembers')->middleware('member.actions:create');
+        Route::post('/create', 'TeamController@addMember')->middleware('member.actions:create');
+        Route::post('/createMany', 'TeamController@addMember')->middleware('member.actions:create');
         Route::post('/{member_id}/edit', 'TeamMemberController@update')->middleware('member.actions:create');
-        Route::post('/{member_id}/delete', 'TeamMemberController@destroy')->middleware('member.actions:create');
+        Route::delete('/{member_id}', 'TeamMemberController@destroy')->middleware('member.actions:create');
     });
 });
 
