@@ -44,16 +44,16 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'author'=>'required',
             'content'=>'required',
+            'title'=>'required',
         ]);
 
         $post = new Post([
-            'author'=>$request->get('author'),
+            'author_id'=>Auth::user()->id,
             'content'=>$request->get('content'),
+            'title'=>$request->get('title'),
             'public'=> $request->get('public'),
             'image'=>$request->get('image'),
-            'team_id'=>$request->get('team_id')
         ]);
 
         $post->save();
@@ -69,7 +69,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return Post::with(['comments','likes'])->with('likes')->find($id)->toJson();
+        return Post::find($id)->toJson();
     }
 
     /**
@@ -95,20 +95,19 @@ class PostController extends Controller
     {
         $request->validate([
             'content' => 'required',
-            'author' => 'required',
+            'author_id' => 'required',
+            'title'=> 'required',
         ]);
 
         $post = Post::find($id);
         $post->content = $request->get('content');
-        $post->author = $request->get('author');
+        $post->author = Auth::user()->id;
+        $post->title = $request->get('title');
         if ($request->has('public')) {
             $post->public = $request->get('public');
         }
         if ($request->has('image')) {
             $post->image = $request->get('image');;
-        }
-        if ($request->has('team_id')) {
-            $post->team_id = $request->get('team_id');
         }
         $post->save();
 
@@ -165,5 +164,10 @@ class PostController extends Controller
         return response()->json([
             'message' => $message
         ]);
+    }
+
+    public function getUserPosts(){
+        $id = Auth::user()->id;
+        return Post::where('author_id',  1)->get()->toJson();
     }
 }

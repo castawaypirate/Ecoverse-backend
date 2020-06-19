@@ -24,7 +24,8 @@ Route::prefix('posts')->group(function () {
     Route::put('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
     Route::post('/{id}/handle_like', 'PostController@handleLike');
-
+    Route::get('/{id}', 'PostController@show');
+    Route::get('/author/{id}', 'PostController@getUserPosts');
 });
 
 Route::resource('events', 'EventController');
