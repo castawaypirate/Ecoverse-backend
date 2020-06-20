@@ -22,7 +22,7 @@ class CreateUsersDataTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('image')->default('image.png')->nullable();
-            $table->date('birthday')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('location',50)->nullable();
             $table->timestamps();
         });

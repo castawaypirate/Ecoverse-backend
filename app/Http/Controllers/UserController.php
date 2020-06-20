@@ -78,6 +78,7 @@ class UserController extends Controller
         $request->validate(([
             'password' => 'required',
             'username' => 'max:55|valid_username|min:4|unique:users,username,'. $user->id,
+            'email' => 'required|email|max:255|unique:users_data,email,'. $userdata->id
         ]));
 
         if(Hash::check($request->password, $user->password))
@@ -86,7 +87,7 @@ class UserController extends Controller
             $userdata->surname = $request->input('surname');
             $userdata->email = $request->input('email');
             $userdata->image = $request->input('image');
-            $userdata->birthday = $request->input('birthday');
+            $userdata->birth_date = $request->input('birth_date');
             $userdata->location = $request->input('location');
             $userdata->save();
             $user->username = $request->input('username');
