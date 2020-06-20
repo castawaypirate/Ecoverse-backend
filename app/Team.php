@@ -19,11 +19,11 @@ class Team extends Model
     protected $hidden = ['pivot'];
 
     public function members() {
-        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivot('id')->as('member');
+        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivotValue('status', 'accepted');
     }
 
-    public function getMembers() {
-        $this->members();
+    public function pendingMembers() {
+        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivotValue('status', 'pending');
     }
 
     public function posts() {
