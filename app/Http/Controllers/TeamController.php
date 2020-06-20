@@ -80,6 +80,7 @@ class TeamController extends Controller
         $teamMember->team_id = $team->id;
         $teamMember->user_id = $user->id;
         $teamMember->role_id = config('teamMemberRoles.adminRole');
+        $teamMember->status = 'accepted';
         $teamMember->save();
 
         return response()->json($team);
