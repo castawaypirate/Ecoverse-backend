@@ -55,7 +55,7 @@ Route::prefix('/users')->group(function () {
 Route::prefix('/team')->group(function () {
     Route::get('/', 'TeamController@read');
     Route::get('/edit', 'TeamController@editMany');
-    Route::post('/create', 'TeamController@store')->middleware('member.actions:create');;
+    Route::post('/create', 'TeamController@store');
     Route::get('/{team_id}', 'TeamController@readOne')->middleware('member.actions:create');
     Route::post('/{team_id}/edit', 'TeamController@update')->middleware('member.actions:edit');
     Route::delete('/{team_id}', 'TeamController@destroy')->middleware('member.actions:delete');
@@ -64,7 +64,7 @@ Route::prefix('/team')->group(function () {
         Route::post('/create', 'TeamController@addMember')->middleware('member.actions:create');
         Route::post('/createMany', 'TeamController@addMember')->middleware('member.actions:create');
         Route::post('/{member_id}/edit', 'TeamMemberController@update')->middleware('member.actions:create');
-        Route::delete('/{member_id}', 'TeamMemberController@destroy')->middleware('member.actions:create');
+        Route::delete('/{member_id}', 'TeamController@deleteMember')->middleware('member.actions:create');
     });
 });
 
