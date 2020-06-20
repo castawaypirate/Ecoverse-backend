@@ -18,12 +18,20 @@ class Team extends Model
 {
     protected $hidden = ['pivot'];
 
+    public function allMembers() {
+        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id");
+    }
+
+    public function admins() {
+        return $this->allMembers()->withPivotValue('role_id', config('teamMemberRoles.adminRole'));
+    }
+
     public function members() {
-        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivotValue('status', 'accepted');
+        return $this->allMembers()->withPivotValue('status', 'accepted');
     }
 
     public function pendingMembers() {
-        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivotValue('status', 'pending');
+        return $this->allMembers()->withPivotValue('status', 'pending');
     }
 
     public function posts() {

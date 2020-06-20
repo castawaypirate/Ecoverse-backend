@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     protected $fillable = [
+        'title',
         'content',
-        'author',
-        'team_id',
+        'author_id',
         'image'.
         'public'
     ];
@@ -21,5 +21,9 @@ class Post extends Model
 
     public function likes() {
         $this->hasMany(Like::class);
+    }
+
+    public function team() {
+        return $this->hasOneThrough(Team::class, TeamPosts::class, 'post_id', 'id', 'id', 'team_id');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Team;
 use App\TeamMember;
+use App\TeamPosts;
 use Auth;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -223,6 +224,29 @@ class TeamController extends Controller
 
         return response()->json([
             'message' => 'Successful deletion of member'
+        ]);
+    }
+
+    public function createPost(Request $request, $team_id) {
+        $user = Auth::user();
+        $team = Team::find($team_id)->whereHas('members', function ($q) use ($user) {
+            $q->where('users.id', $user->id);
+        })->first();
+
+        if (!$team) {
+            throw new \Exception('You cant access this team');
+        }
+
+        $postCrl = new PostController();
+        $post = $postCrl->create($request);
+
+        $teamPost = new TeamPosts();
+        $teamPost->post_id = $post->id;
+        $teamPost->team_id = $team->id;
+        $teamPost->save();
+
+        return response()->json([
+            'message' => 'Succesful creation of post'
         ]);
     }
 }

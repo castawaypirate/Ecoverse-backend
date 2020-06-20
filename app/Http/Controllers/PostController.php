@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Comment;
 use App\Post;
 use Auth;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use function GuzzleHttp\Promise\all;
-use function MongoDB\BSON\toJSON;
 
 class PostController extends Controller
 {
@@ -30,9 +29,36 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request): Post
     {
-        return response("Post create page");
+        $request->validate([
+            'title'=>'required',
+            'content'=>'required',
+        ]);
+
+        $user = Auth::user();
+
+        $post = new Post([
+            'title'=>$request->title,
+            'content'=>$request->content,
+            'public'=> $request->public,
+            'image'=>$request->image,
+            'author_id'=>$user->id,
+        ]);
+        $post->save();
+
+        return $post;
+    }
+
+    public function teamPosts() {
+        $user = Auth::user();
+        $posts = Post::whereHas('team', function ($q) {
+            $q->where('teams.public', 1);
+        })->orWhereHas('team.members', function ($q) use ($user) {
+            $q->where('users.id', $user->id);
+        })->with('team')->orderBy('created_at', 'desc');
+
+        return response()->json($posts->get());
     }
 
     /**
@@ -43,20 +69,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'author'=>'required',
-            'content'=>'required',
-        ]);
-
-        $post = new Post([
-            'author'=>$request->get('author'),
-            'content'=>$request->get('content'),
-            'public'=> $request->get('public'),
-            'image'=>$request->get('image'),
-            'team_id'=>$request->get('team_id')
-        ]);
-
-        $post->save();
+        $this->create($request);
 
         return response("Post successfully created");
     }
@@ -95,12 +108,12 @@ class PostController extends Controller
     {
         $request->validate([
             'content' => 'required',
-            'author' => 'required',
+            'author_id' => 'required',
         ]);
 
         $post = Post::find($id);
         $post->content = $request->get('content');
-        $post->author = $request->get('author');
+        $post->author_id = $request->get('author_id');
         if ($request->has('public')) {
             $post->public = $request->get('public');
         }
@@ -136,7 +149,7 @@ class PostController extends Controller
         $user = Auth::user();
 
         $comment = new Comment();
-        $comment->author_id = $user->id;
+        $comment->author_id_id = $user->id;
         $comment->post_id = $post_id;
         $comment->content = $request->content;
         $comment->save();

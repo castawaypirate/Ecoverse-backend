@@ -24,7 +24,7 @@ Route::prefix('posts')->group(function () {
     Route::put('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
     Route::post('/{id}/handle_like', 'PostController@handleLike');
-
+    Route::get('/teams', 'PostController@teamPosts');
 });
 
 Route::resource('events', 'EventController');
@@ -60,6 +60,10 @@ Route::prefix('/team')->group(function () {
     Route::get('/{team_id}', 'TeamController@readOne')->middleware('member.actions:create');
     Route::post('/{team_id}/edit', 'TeamController@update')->middleware('member.actions:edit');
     Route::delete('/{team_id}', 'TeamController@destroy')->middleware('member.actions:delete');
+    Route::prefix('/{team_id}/posts')->group(function() {
+        Route::get('/');
+        Route::post('/create', 'TeamController@createPost');
+    });
     Route::prefix('/{team_id}/members')->group(function() {
         Route::get('/', 'TeamController@getMembers')->middleware('member.actions:create');
         Route::post('/{user_id}/apply', 'TeamController@teamMemberApply');
