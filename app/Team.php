@@ -16,8 +16,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Team extends Model
 {
+    protected $hidden = ['pivot'];
+
     public function members() {
-        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id");
+        return $this->belongsToMany(User::class, "team_members", "team_id", "user_id")->withPivot('id')->as('member');
+    }
+
+    public function getMembers() {
+        $this->members();
     }
 
     public function posts() {

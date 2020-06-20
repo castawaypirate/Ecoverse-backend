@@ -32,20 +32,18 @@ class TeamController extends Controller
         $team = Team::where('id', $team_id);
 
         if ($team->first()->public) {
-            $team = $team->with('posts');
+            $team = $team->with(['posts', 'members.data']);
         } else {
             $user = Auth::user();
             $is_member = $team->whereHas('members', function (Builder $q) use ($user) {
                 $q->where('users.id', $user->id);
             });
             if ($is_member) {
-                $team = $team->with('posts');
+                $team = $team->with(['posts', 'members.data']);
             }
         }
 
-        return response()->json([
-            $team->get()
-        ]);
+        return response()->json($team->first());
     }
 
     /**
@@ -105,9 +103,20 @@ class TeamController extends Controller
             $team->public = $request->public;
         }
 
+        $team->save();
+
         return response()->json(
             $team
         );
+    }
+
+    public function editMany() {
+        $user = Auth::user();
+        $teams = Team::whereHas('members', function (Builder $q) use ($user) {
+            $q->where('users.id', $user->id)->where('role_id', config('teamMemberRoles.adminRole'));
+        });
+
+        return response()->json($teams->get());
     }
 
     /**

@@ -25,10 +25,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'pivot'
     ];
 
-    public function getData()
+    public function data()
     {
         return $this->hasOne(UserData::class);
     }
