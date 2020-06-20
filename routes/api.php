@@ -66,7 +66,7 @@ Route::prefix('/team')->group(function () {
     });
     Route::prefix('/{team_id}/members')->group(function() {
         Route::get('/', 'TeamController@getMembers')->middleware('member.actions:create');
-        Route::post('/{user_id}/apply', 'TeamController@teamMemberApply');
+        Route::post('/apply', 'TeamController@teamMemberApply');
         Route::post('/{user_id}/accept_member', 'TeamController@teamMemberAccept')->middleware('member.actions:create');
         Route::post('/createMany', 'TeamController@addMember')->middleware('member.actions:create');
         Route::post('/{member_id}/edit', 'TeamMemberController@update')->middleware('member.actions:create');
