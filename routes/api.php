@@ -54,7 +54,7 @@ Route::prefix('/users')->group(function () {
 
 Route::prefix('/team')->group(function () {
     Route::get('/', 'TeamController@read');
-    Route::get('/edit', 'TeamController@editMany')->middleware('member.actions:edit');
+    Route::get('/edit', 'TeamController@editMany');
     Route::get('/{team_id}/edit', 'TeamController@readForEdit')->middleware('member.actions:edit');
     Route::post('/create', 'TeamController@store');
     Route::get('/{team_id}', 'TeamController@readOne')->middleware('member.actions:create');
