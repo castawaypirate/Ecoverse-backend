@@ -168,6 +168,6 @@ class PostController extends Controller
 
     public function getUserPosts(){
         $id = Auth::user()->id;
-        return Post::where('author_id',  1)->get()->toJson();
+        return Post::where('author_id',  $id)->get()->toJson();
     }
 }
