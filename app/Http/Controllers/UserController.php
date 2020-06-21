@@ -80,21 +80,21 @@ class UserController extends Controller
 
         if(!auth()->attempt(($logindata)))
         {
-            return response((['message'=>'Invalid credentilas']));
+            throw new \Exception('Invalid credentials');
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
         return response(['user'=>auth()->user(),'accessToken'=>$accessToken]);
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request)
     {
         $request->validate(([
             'password' => 'required'
         ]));
 
-        $user = User::find($id);
-        $userdata = UserData::where('user_id','=',$id)->firstOrFail();
+        $user = Auth::user();
+        $userdata = UserData::where('user_id','=',$user->id)->firstOrFail();
 
         if(Hash::check($request->password, $user->password))
         {
