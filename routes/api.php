@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::prefix('posts')->group(function () {
     Route::get('/','PostController@index')->name('posts');
     Route::post('/', 'PostController@store')->name('create');
@@ -24,7 +21,8 @@ Route::prefix('posts')->group(function () {
     Route::put('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
     Route::post('/{id}/handle_like', 'PostController@handleLike');
-    Route::get('/teams', 'PostController@teamPosts');
+    Route::get('/{id}', 'PostController@show');
+    Route::get('/author', 'PostController@getUserPosts');
 });
 
 Route::resource('events', 'EventController');
@@ -44,12 +42,13 @@ Route::post('/neweventmember','EventMemberController@store');
 Route::delete('/eventmembers/{id}','EventMemberController@destroy');
 
 Route::prefix('/users')->group(function () {
+    Route::get('/authenticated', 'UserController@authenticated')->middleware('auth:api');
     Route::get('/{id}', 'UserController@getUser');
     Route::get('/data/{id}', 'UserController@getUserData');
     Route::post('/create', 'UserController@create');
     Route::post('/login', 'UserController@login');
-    Route::put('/{id}', 'UserController@update');
-    Route::delete('/{id}', 'UserController@delete');
+    Route::put('/', 'UserController@update')->middleware('auth:api');
+    Route::delete('/{id}', 'UserController@delete')->middleware('auth:api');;
 });
 
 Route::prefix('/team')->group(function () {

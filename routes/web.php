@@ -1,5 +1,7 @@
 <?php
 
+use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +24,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/home2', 'FriendController@getAllFriends')->name('home2');
+
+// Route::get(,'user/{id}', 'UserController@show')->name('demos');
+
+// Route::get('/demos','UserController@index');
+
+Route::get('/demos','UserController@index');

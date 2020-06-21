@@ -69,7 +69,20 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $this->create($request);
+        $request->validate([
+            'content'=>'required',
+            'title'=>'required',
+        ]);
+
+        $post = new Post([
+            'author_id'=>Auth::user()->id,
+            'content'=>$request->get('content'),
+            'title'=>$request->get('title'),
+            'public'=> $request->get('public'),
+            'image'=>$request->get('image'),
+        ]);
+
+        $post->save();
 
         return response("Post successfully created");
     }
@@ -82,7 +95,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return Post::with(['comments','likes'])->with('likes')->find($id)->toJson();
+        return Post::find($id)->toJson();
     }
 
     /**
@@ -108,24 +121,26 @@ class PostController extends Controller
     {
         $request->validate([
             'content' => 'required',
-            'author_id' => 'required',
+            'title'=> 'required',
         ]);
 
         $post = Post::find($id);
-        $post->content = $request->get('content');
-        $post->author_id = $request->get('author_id');
-        if ($request->has('public')) {
-            $post->public = $request->get('public');
-        }
-        if ($request->has('image')) {
-            $post->image = $request->get('image');;
-        }
-        if ($request->has('team_id')) {
-            $post->team_id = $request->get('team_id');
-        }
-        $post->save();
+        if (Auth::user()->id == $post->author_id) {
+            $post->content = $request->get('content');
+            //$post->author_id = Auth::user()->id;
+            $post->title = $request->get('title');
+            if ($request->has('public')) {
+                $post->public = $request->get('public');
+            }
+            if ($request->has('image')) {
+                $post->image = $request->get('image');;
+            }
+            $post->save();
 
-        return response("Post successfully updated!");
+            return response("Post successfully updated!");
+        }
+        else
+            error_log("Error Authentication");
     }
 
     /**
@@ -137,8 +152,12 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::find($id);
-        $post->delete();
-        return response("Post successfully deleted!");
+        if (Auth::user()->id == $post->author_id) {
+            $post->delete();
+            return response("Post successfully deleted!");
+        }
+        else
+            error_log("Error Authentication");
     }
 
     public function addComment(Request $request, $post_id) {
@@ -178,5 +197,10 @@ class PostController extends Controller
         return response()->json([
             'message' => $message
         ]);
+    }
+
+    public function getUserPosts(){
+        $id = Auth::user()->id;
+        return Post::where('author_id',  $id)->get()->toJson();
     }
 }

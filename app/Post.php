@@ -11,6 +11,7 @@ class Post extends Model
         'title',
         'content',
         'author_id',
+        'title',
         'image'.
         'public'
     ];
