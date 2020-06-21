@@ -21,7 +21,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::all()->toJson();
+        return response()->json(Post::all()->orderBy('created_at', 'desc'));
     }
 
     /**
@@ -84,7 +84,7 @@ class PostController extends Controller
 
         $post->save();
 
-        return response("Post successfully created");
+        return response()->json(['message' => "Post successfully created"]);
     }
 
     /**
@@ -95,7 +95,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return Post::find($id)->toJson();
+        return response()->json(Post::find($id));
     }
 
     /**
@@ -201,6 +201,6 @@ class PostController extends Controller
 
     public function getUserPosts(){
         $id = Auth::user()->id;
-        return Post::where('author_id',  $id)->get()->toJson();
+        return response()->json(Post::where('author_id', $id)->get());
     }
 }
