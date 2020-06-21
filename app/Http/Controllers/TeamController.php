@@ -67,12 +67,22 @@ class TeamController extends Controller
             'name'          => ['required'],
             'description'   => ['required'],
             'public'   => ['required'],
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $team = new Team();
         $team->name = $request->name;
         $team->description = $request->description;
         $team->public = $request->public;
+
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $team->image = asset('/images/' .$name);
+        }
+
         $team->save();
 
         $user = Auth::user();
@@ -96,7 +106,8 @@ class TeamController extends Controller
     public function update(Request $request, $team_id)
     {
         $request->validate([
-            'public' => ['boolean']
+            'public' => 'boolean',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $team = Team::find($team_id);
@@ -111,6 +122,14 @@ class TeamController extends Controller
 
         if (isset($request->public)) {
             $team->public = $request->public;
+        }
+
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $team->image = asset('/images/' .$name);
         }
 
         $team->save();

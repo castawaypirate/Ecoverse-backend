@@ -72,15 +72,23 @@ class PostController extends Controller
         $request->validate([
             'content'=>'required',
             'title'=>'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $post = new Post([
             'author_id'=>Auth::user()->id,
             'content'=>$request->get('content'),
             'title'=>$request->get('title'),
-            'public'=> $request->get('public'),
-            'image'=>$request->get('image'),
+            'public'=> $request->get('public')
         ]);
+
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $post->image = asset('/images/' .$name);
+        }
 
         $post->save();
 
@@ -122,6 +130,7 @@ class PostController extends Controller
         $request->validate([
             'content' => 'required',
             'title'=> 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $post = Post::find($id);
@@ -133,14 +142,17 @@ class PostController extends Controller
                 $post->public = $request->get('public');
             }
             if ($request->has('image')) {
-                $post->image = $request->get('image');;
+                $image = $request->file('image');
+                $name = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $name);
+                $post->image = asset('/images/' .$name);
             }
             $post->save();
 
-            return response("Post successfully updated!");
+            return response()->json(['message' => 'Post successfully updated!']);
         }
-        else
-            error_log("Error Authentication");
+        throw new \Exception('You cant edit this post');
     }
 
     /**

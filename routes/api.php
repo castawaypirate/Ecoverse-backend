@@ -18,7 +18,7 @@ Route::prefix('posts')->group(function () {
     Route::get('/','PostController@index')->name('posts');
     Route::post('/', 'PostController@store')->name('create');
     Route::delete('/{id}', 'PostController@destroy')->name('delete');
-    Route::put('/{id}', 'PostController@update')->name('update');
+    Route::post('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
     Route::post('/{id}/handle_like', 'PostController@handleLike');
     Route::get('/author', 'PostController@getUserPosts');
@@ -48,6 +48,7 @@ Route::prefix('/users')->group(function () {
     Route::post('/create', 'UserController@create');
     Route::post('/login', 'UserController@login');
     Route::put('/', 'UserController@update')->middleware('auth:api');
+    Route::post('/', 'UserController@updateImg')->middleware('auth:api');
     Route::delete('/{id}', 'UserController@delete')->middleware('auth:api');;
 });
 
@@ -99,4 +100,20 @@ Route::get('/rss', function () {
     }
 
     return response()->json($feed);
+});
+
+Route::get('/resources/uploads/{filename}', function($filename){
+    $path = resource_path() . '/app/uploads/' . $filename;
+
+    if(!File::exists($path)) {
+        return response()->json(['message' => 'Image not found.'], 404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
 });
