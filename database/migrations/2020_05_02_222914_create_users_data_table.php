@@ -15,17 +15,20 @@ class CreateUsersDataTable extends Migration
     public function up()
     {
         Schema::create('users_data', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->bigIncrements('id');
+            $table->bigInteger('user_id')->unsigned();
             $table->string('name')->nullable();
             $table->string('surname')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('image')->default('image.png');
-            $table->date('birthday')->nullable();
+            $table->string('image')->default('image.png')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('location',50)->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('users_data', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
