@@ -84,3 +84,19 @@ Route::prefix('/comments')->group(function () {
     Route::delete('/{id}', 'CommentController@destroy');
     Route::post('/{id}/handle_like', 'CommentController@handleLike');
 });
+
+Route::get('/rss', function () {
+    $rss = simplexml_load_file('https://inhabitat.com/environment/feed/');
+    $feed = [];
+    foreach ($rss->channel->item as $item) {
+        $feedItem = [
+            'title' => (string) $item->title,
+            'description' => (string) $item->description,
+            'guid' => (string) $item->guid,
+            'created_at' => (string) $item->pubDate,
+        ];
+        array_push($feed, $feedItem);
+    }
+
+    return response()->json($feed);
+});
