@@ -13,8 +13,11 @@ use Validator;
 class UserController extends Controller
 {
 
-    public function index()
+    public function authenticated()
     {
+        $user = Auth::user();
+        $user = User::with('data')->find($user->id);
+        return response()->json($user);
     }
 
     public function create(Request $request)
@@ -63,7 +66,9 @@ class UserController extends Controller
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
-        return response(['user'=> Auth::user()->with('data')->first(),'accessToken'=>$accessToken]);
+        $user = Auth::user();
+        $user = User::with('data')->find($user->id);
+        return response(['user'=> $user,'accessToken'=>$accessToken]);
     }
 
     public function update(Request $request)
@@ -108,7 +113,7 @@ class UserController extends Controller
             $user->save();
             return response([$user,$userdata]);
         }
-        return response(['message'=>'Wrong password']);
+        throw new \Exception('Wrong password');
     }
 
     public function delete(Request $request,$id)

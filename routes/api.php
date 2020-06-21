@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user()->with('data')->first();
-});
 Route::prefix('posts')->group(function () {
     Route::get('/','PostController@index')->name('posts');
     Route::post('/', 'PostController@store')->name('create');
@@ -45,6 +42,7 @@ Route::post('/neweventmember','EventMemberController@store');
 Route::delete('/eventmembers/{id}','EventMemberController@destroy');
 
 Route::prefix('/users')->group(function () {
+    Route::get('/authenticated', 'UserController@authenticated')->middleware('auth:api');
     Route::get('/{id}', 'UserController@getUser');
     Route::get('/data/{id}', 'UserController@getUserData');
     Route::post('/create', 'UserController@create');
