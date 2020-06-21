@@ -95,23 +95,26 @@ class PostController extends Controller
     {
         $request->validate([
             'content' => 'required',
-            'author_id' => 'required',
             'title'=> 'required',
         ]);
 
         $post = Post::find($id);
-        $post->content = $request->get('content');
-        $post->author = Auth::user()->id;
-        $post->title = $request->get('title');
-        if ($request->has('public')) {
-            $post->public = $request->get('public');
-        }
-        if ($request->has('image')) {
-            $post->image = $request->get('image');;
-        }
-        $post->save();
+        if (Auth::user()->id == $post->author_id) {
+            $post->content = $request->get('content');
+            //$post->author_id = Auth::user()->id;
+            $post->title = $request->get('title');
+            if ($request->has('public')) {
+                $post->public = $request->get('public');
+            }
+            if ($request->has('image')) {
+                $post->image = $request->get('image');;
+            }
+            $post->save();
 
-        return response("Post successfully updated!");
+            return response("Post successfully updated!");
+        }
+        else
+            error_log("Error Authentication");
     }
 
     /**
@@ -123,8 +126,12 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::find($id);
-        $post->delete();
-        return response("Post successfully deleted!");
+        if (Auth::user()->id == $post->author_id) {
+            $post->delete();
+            return response("Post successfully deleted!");
+        }
+        else
+            error_log("Error Authentication");
     }
 
     public function addComment(Request $request, $post_id) {
