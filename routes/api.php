@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    return $request->user()->with('data')->first();
 });
 Route::prefix('posts')->group(function () {
     Route::get('/','PostController@index')->name('posts');
@@ -49,8 +49,8 @@ Route::prefix('/users')->group(function () {
     Route::get('/data/{id}', 'UserController@getUserData');
     Route::post('/create', 'UserController@create');
     Route::post('/login', 'UserController@login');
-    Route::put('/{id}', 'UserController@update');
-    Route::delete('/{id}', 'UserController@delete');
+    Route::put('/', 'UserController@update')->middleware('auth:api');
+    Route::delete('/{id}', 'UserController@delete')->middleware('auth:api');;
 });
 
 Route::prefix('/team')->group(function () {

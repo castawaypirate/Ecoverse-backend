@@ -63,7 +63,7 @@ class UserController extends Controller
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
-        return response(['user'=>auth()->user(),'accessToken'=>$accessToken]);
+        return response(['user'=> Auth::user()->with('data')->first(),'accessToken'=>$accessToken]);
     }
 
     public function update(Request $request)
@@ -77,16 +77,34 @@ class UserController extends Controller
 
         if(Hash::check($request->password, $user->password))
         {
-            $userdata->name = $request->input('name');
-            $userdata->surname = $request->input('surname');
-            $userdata->email = $request->input('email');
-            $userdata->image = $request->input('image');
-            $userdata->birth_date = $request->input('birth_date');
-            $userdata->location = $request->input('location');
+            if ($request->input('name') !== null ) {
+                $userdata->name = $request->input('name');
+            }
+            if ($request->input('surname') !== null ) {
+                $userdata->surname = $request->input('surname');
+            }
+            if ($request->input('email') !== null ) {
+                $userdata->email = $request->input('email');
+            }
+            if ($request->input('image') !== null ) {
+                $userdata->image = $request->input('image');
+            }
+            if ($request->input('birth_date') !== null ) {
+                $userdata->birth_date = $request->input('birth_date');
+            }
+            if ($request->input('location') !== null ) {
+                $userdata->location = $request->input('location');
+            }
             $userdata->save();
-            $user->username = $request->input('username');
-            $user->password = Hash::make($request->password);;
-            $user->role = $request->input('role');
+            if ($request->input('username') !== null ) {
+                $user->username = $request->input('username');
+            }
+            if ($request->input('new_password') !== null ) {
+                $user->password = Hash::make($request->password);
+            }
+            if ($request->input('role') !== null ) {
+                $user->role = $request->input('role');
+            }
             $user->save();
             return response([$user,$userdata]);
         }
