@@ -20,7 +20,7 @@ Route::prefix('posts')->group(function () {
     Route::delete('/{id}', 'PostController@destroy')->name('delete');
     Route::post('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
-    Route::post('/{id}/handle_like', 'PostController@handleLike');
+    Route::post('/{id}/like', 'PostController@handleLike');
     Route::get('/author', 'PostController@getUserPosts');
     Route::get('/{id}', 'PostController@show');
 });
