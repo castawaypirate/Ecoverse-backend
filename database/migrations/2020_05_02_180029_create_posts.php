@@ -20,6 +20,7 @@ class CreatePosts extends Migration
             $table->text("content");
             $table->string("image")->nullable();
             $table->boolean("public")->default(0);
+            $table->bigInteger("event_id")->unsigned()->nullable();
             $table->timestamps();
         });
 

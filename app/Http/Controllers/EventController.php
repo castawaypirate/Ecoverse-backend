@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Event;
 use App\Post;
+use App\Comment;
+use Auth;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +21,7 @@ class EventController extends Controller
      */
     public function index()
     {
-        return Event::all()->toJson();
+        return response()->json(Event::all()->orderBy('created_at', 'desc'));
     }
 
     /**
@@ -37,20 +43,22 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'author'=>'required',
+            'title' => 'required',
             'content'=>'required',
             'start'=>'required',
             'end'=>'required',
+            'place'=>'required',
         ]);
 
         $post = new Post([
-            'author'=>$request->get('author'),
+            'author_id' => Auth::user()->id,
+            'title' => $request->get('title'),
             'content'=>$request->get('content'),
             'public'=>$request->has('public'),
             'image'=>$request->get('image'),
             'team_id'=>$request->get('team_id')
         ]);
-
+        $post->save();
 
         $event = new Event([
             'start'=>$request->get('start'),
@@ -58,10 +66,12 @@ class EventController extends Controller
             'place'=>$request->get('place'),
             'post_id'=>$post->id
         ]);
+        $event->save();
+        $post->event_id = $event->id;
+
 
         $post->save();
-        $event->save();
-        return response("Event successfully created!");
+        return response()->json(['message' => "Event successfully created"]);
     }
 
     /**
@@ -72,7 +82,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        return Event::find($id)->toJson();
+        return response()->json(Event::find($id));
     }
 
     /**
@@ -97,7 +107,7 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'author'=>'required',
+            'title'=>'required',
             'content'=>'required',
             'start'=>'required',
             'end'=>'required',
@@ -107,25 +117,30 @@ class EventController extends Controller
         $event = Event::find($id);
         $post = Post::find($event->post_id);
 
-        $post->content = $request->get('content');
-        $post->author = $request->get('author');
-        if($request->has('public')) {
-            $post->public = $request->has('public');
-        }
-        if($request->has('image')) {
-            $post->image = $request->get('image');
-        }
-        if($request->has('team_id')) {
-            $post->team_id = $request->get('team_id');
-        }
-        $post->save();
+        if(Auth::user()->id == $post->author_id) {
 
-        $event->start = $request->get('start');
-        $event->end = $request->get('end');
-        $event->place = $request->get('place');
-        $event->save();
+            $post->content = $request->get('content');
+            $post->title = $request->get('title');
+            if ($request->has('public')) {
+                $post->public = $request->has('public');
+            }
+            if ($request->has('image')) {
+                $post->image = $request->get('image');
+            }
+            if ($request->has('team_id')) {
+                $post->team_id = $request->get('team_id');
+            }
+            $post->save();
 
-        return response("Event successfully updated!");
+            $event->start = $request->get('start');
+            $event->end = $request->get('end');
+            $event->place = $request->get('place');
+            $event->save();
+
+            return response()->json(['message' => "Event successfully updated"]);
+        }
+        else
+            error_log("Authorization error");
 
     }
 
@@ -138,7 +153,18 @@ class EventController extends Controller
     public function destroy($id)
     {
         $event = Event::find($id);
-        $event->delete();
-        return response("Event successfully deleted!");
+        $post = Post::find($event->post_id);
+        if(Auth::user()->id == $post->author_id) {
+            $event->delete();
+            $post->delete();
+            return response("Event successfully deleted!");
+        }
+        else
+            error_log("Authorization error");
+    }
+
+    public function getUserEvents(){
+        $id = Auth::user()->id;
+        return response()->json(Post::where('author_id', $id)->whereNotNull('event_id')->get());
     }
 }

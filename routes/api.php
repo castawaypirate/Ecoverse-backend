@@ -18,20 +18,21 @@ Route::prefix('posts')->group(function () {
     Route::get('/','PostController@index')->name('posts');
     Route::post('/', 'PostController@store')->name('create');
     Route::delete('/{id}', 'PostController@destroy')->name('delete');
-    Route::put('/{id}', 'PostController@update')->name('update');
+    Route::post('/{id}', 'PostController@update')->name('update');
     Route::post('/{id}/add_comment', 'PostController@addComment');
     Route::post('/{id}/handle_like', 'PostController@handleLike');
     Route::get('/author', 'PostController@getUserPosts');
     Route::get('/{id}', 'PostController@show');
 });
 
-Route::resource('events', 'EventController');
 
-Route::prefix('/events')->group(function () {
+Route::prefix('events')->group(function () {
     Route::get('/', 'EventController@index')->name('events');
     Route::post('/', 'EventController@store')->name('event');
-    Route::put('/{id}', 'EventController@update')->name('update');
+    Route::post('/{id}', 'EventController@update')->name('update');
     Route::delete('/{id}', 'EventController@destroy')->name('delete');
+    Route::get('/author', 'EventController@getUserEvents');
+    Route::get('/{id}', 'EventController@show');
 });
 
 

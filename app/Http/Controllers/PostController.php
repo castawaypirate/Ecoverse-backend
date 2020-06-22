@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Comment;
 use App\Post;
+use App\Event;
 use Auth;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -137,7 +138,7 @@ class PostController extends Controller
             }
             $post->save();
 
-            return response("Post successfully updated!");
+            return response()->json(['message' => "Post successfully updated"]);
         }
         else
             error_log("Error Authentication");
@@ -201,6 +202,6 @@ class PostController extends Controller
 
     public function getUserPosts(){
         $id = Auth::user()->id;
-        return response()->json(Post::where('author_id', $id)->get());
+        return response()->json(Post::where('author_id', $id)->where('event_id', null)->get());
     }
 }
