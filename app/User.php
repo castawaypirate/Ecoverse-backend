@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -47,5 +48,15 @@ class User extends Authenticatable
 
     public function teamRole($team_id) {
         return $this->teamRoles()->wherePivot('team_id', '=', $team_id)->first();
+    }
+
+    public function likes() {
+        return $this->hasMany(Like::class);
+    }
+
+    public function likesPost($post_id) {
+        return $this->whereHas('likes', function (Builder $q) use ($post_id) {
+            $q->where('post_id', $post_id);
+        })->first() ? true : false;
     }
 }

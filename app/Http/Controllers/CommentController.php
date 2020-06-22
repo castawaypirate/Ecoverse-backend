@@ -44,7 +44,7 @@ class CommentController extends Controller
 
         $childComment = new Comment();
         $childComment->content = $request->content;
-        $childComment->comment_id = $parentComment->id;
+        $childComment->comment_id = $parentComment->id ?? null;
         $childComment->author_id = $user->id;
         $childComment->post_id = $parentComment->post_id;
         $childComment->save();

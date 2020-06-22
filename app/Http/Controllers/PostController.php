@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Comment;
 use App\Post;
+use App\Like;
 use Auth;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', [
+            'except' => ['show', 'index']
+        ]);
     }
     /**
      * Display a listing of the resource.
@@ -21,7 +24,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return response()->json(Post::all()->orderBy('created_at', 'desc'));
+        $posts = Post::withCount('likes')->orderBy('created_at', 'desc')->get();
+        return response()->json($posts);
     }
 
     /**
@@ -103,7 +107,12 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Post::find($id));
+        $post = Post::with(['comments' => function ($q) {
+            return $q->where('comments.comment_id', null)->orderBy('created_at', 'desc');
+        }, 'comments.comments.author' => function ($q) {
+            return $q->orderBy('created_at', 'desc');
+        }, 'comments.author'])->withCount('likes')->find($id);
+        return response()->json($post);
     }
 
     /**
@@ -180,7 +189,7 @@ class PostController extends Controller
         $user = Auth::user();
 
         $comment = new Comment();
-        $comment->author_id_id = $user->id;
+        $comment->author_id = $user->id;
         $comment->post_id = $post_id;
         $comment->content = $request->content;
         $comment->save();
@@ -195,7 +204,7 @@ class PostController extends Controller
         $user = Auth::user();
         $like = Like::where('post_id', $id)->where('user_id', $user->id);
 
-        if (!$like) {
+        if (!$like->first()) {
             $like = new Like();
             $like->post_id = $id;
             $like->user_id = $user->id;
