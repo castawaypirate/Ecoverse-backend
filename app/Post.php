@@ -22,6 +22,10 @@ class Post extends Model
         return $this->hasMany(Comment::class, 'post_id', 'id');
     }
 
+    public function event() {
+        return $this->hasOne(Event::class);
+    }
+
     public function likes() {
         return $this->hasManyThrough(User::class, Like::class, 'post_id', 'id', 'id', 'user_id');
     }

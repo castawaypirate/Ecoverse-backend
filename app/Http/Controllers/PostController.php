@@ -25,7 +25,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::withCount('likes')->orderBy('created_at', 'desc')->get();
+        $posts = Post::withCount('likes')->with('event')->orderBy('created_at', 'desc')->get();
         return response()->json($posts);
     }
 
