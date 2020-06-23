@@ -32,7 +32,8 @@ class UserController extends Controller
         $request->validate(([
             'username' => 'required|max:55|valid_username|min:4|unique:users,username',
             'email' => 'required|email|max:255|unique:users_data,email',
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]));
 
         $user->username = $request->input('username');
@@ -41,10 +42,18 @@ class UserController extends Controller
         $user->password = $password;
 
         $user->role = $request->input('role');
+
         $user->save();
 
         $userdata->email = $request->input('email');
         $userdata->user_id = $user->id;
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $userdata->image = asset('/images/' .$name);
+        }
         $userdata->save();
 
         $accessToken = $user->createToken('authToken')->accessToken;
@@ -74,7 +83,8 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $request->validate(([
-            'password' => 'required'
+            'password' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]));
 
         $user = Auth::user();
@@ -100,6 +110,13 @@ class UserController extends Controller
             if ($request->input('location') !== null ) {
                 $userdata->location = $request->input('location');
             }
+            if ($request->has('image')) {
+                $image = $request->file('image');
+                $name = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $name);
+                $userdata->image = asset('/images/' .$name);
+            }
             $userdata->save();
             if ($request->input('username') !== null ) {
                 $user->username = $request->input('username');
@@ -114,6 +131,26 @@ class UserController extends Controller
             return response([$user,$userdata]);
         }
         throw new \Exception('Wrong password');
+    }
+
+    public function updateImg(Request $request) {
+        $request->validate(([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ]));
+
+        $user = Auth::user();
+        $userdata = UserData::where('user_id','=',$user->id)->firstOrFail();
+
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $userdata->image = asset('/images/' .$name);
+        }
+        $userdata->save();
+
+        return response()->json(['image' => $userdata->image]);
     }
 
     public function delete(Request $request,$id)

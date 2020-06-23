@@ -32,14 +32,11 @@ You can make a symlink of phpmyadmin in public folder or download it from `https
 
     http://backend.test/phpmyadmin
 
-For automatic docs run the following commands:
+For better ide intellisense run the following commands:
 
     $ php artisan ide-helper:generate
-    $ php artisan ide-helper:models
-
-For better ide intellisense run the following command:
-
     $ php artisan ide-helper:meta
+    $ php artisan ide-helper:models --nowrite
     
 Finally, you'll need a `.env` for local configuration. Here's an example: 
 

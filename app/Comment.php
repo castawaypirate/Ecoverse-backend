@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     public function author() {
-        return $this->belongsTo(User::class, 'id', 'author_id');
+        return $this->belongsTo(User::class, 'author_id', 'id');
     }
 
     public function firstLevelComments() {
@@ -15,7 +15,11 @@ class Comment extends Model
     }
 
     public function comments() {
-        return $this->firstLevelComments()->with(['comments','likes']);
+        return $this->firstLevelComments()->with('comments');
+    }
+
+    public function post() {
+        return $this->belongsTo(Post::class);
     }
 
     public function likes() {
