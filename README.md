@@ -18,12 +18,6 @@ and run every command inside the vm
 
 You'll find Homestead's configuration in `./Homestead.yaml`
 
-In order to be able to make requests to api you need to run
-
-    $ php artisan passport:install --uuids
-
-Read more in `https://laravel.com/docs/7.x/passport`
-
 You will also have to update your `hosts` file to point the domain `backend.test` to the virtual machines's IP:
 
     192.168.10.10 backend.test
@@ -89,8 +83,18 @@ Finally, you'll need a `.env` for local configuration. Here's an example:
 
 To run the database migrations, use: 
 
-    ./artisan migrate
+    $ php artisan migrate
+
+To seed the database with the required fields use:
+
+    $php artisan db:seed
+
+In order to be able to make requests to api you need to run
+
+    $ php artisan passport:install
+
+Read more in `https://laravel.com/docs/7.x/passport`
     
 To refresh all database migrations (which will erase all data), use:
 
-    ./artisan migrate:refresh
+    $ php artisan migrate:refresh
