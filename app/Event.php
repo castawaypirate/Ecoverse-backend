@@ -17,4 +17,8 @@ class Event extends Model
         'place',
         'post_id'
     ];
+
+    public function post() {
+        return $this->belongsTo(Post::class);
+    }
 }
