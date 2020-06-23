@@ -21,7 +21,7 @@ class CreateUsersDataTable extends Migration
             $table->string('surname')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('image')->default('image.png')->nullable();
+            $table->string('image')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('location',50)->nullable();
             $table->timestamps();

@@ -12,7 +12,9 @@ class EventController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', [
+            'except' => ['show', 'index']
+        ]);
     }
     /**
      * Display a listing of the resource.
