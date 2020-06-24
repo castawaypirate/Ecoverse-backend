@@ -57,9 +57,17 @@ class EventController extends Controller
             'title' => $request->get('title'),
             'content'=>$request->get('content'),
             'public'=>$request->get('public') == 'true' ? 1 : 0,
-            'image'=>$request->get('image'),
             'team_id'=>$request->get('team_id')
         ]);
+
+        if ($request->has('image') && $request->image) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+            $post->image = asset('/images/' .$name);
+        }
+
         $post->save();
 
         $event = new Event([
@@ -86,15 +94,15 @@ class EventController extends Controller
     {
         $user = auth('api')->user();
         if ($user) {
-            $event = Event::whereHas('posts', function($q) use ($user) {
-                $q->where('posts.author_id', $user->id)->orWhere('posts.public', 1);
+            $event = Event::where('id', $id)->whereHas('post', function($q) use ($user) {
+                $q->where('author_id', $user->id)->orWhere('public', 1);
             });
         } else {
-            $event = Event::whereHas('posts', function($q) {
+            $event = Event::where('id', $id)->whereHas('post', function($q) {
                 $q->where('posts.public', 1);
             });
         }
-        return response()->json($event->find($id));
+        return response()->json($event->first());
     }
 
     /**
@@ -136,8 +144,12 @@ class EventController extends Controller
             if ($request->has('public')) {
                 $post->public = $request->public == 'true' ? 1 : 0;
             }
-            if ($request->has('image')) {
-                $post->image = $request->get('image');
+            if ($request->has('image') && $request->image) {
+                $image = $request->file('image');
+                $name = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/images');
+                $image->move($destinationPath, $name);
+                $post->image = asset('/images/' .$name);
             }
             if ($request->has('team_id')) {
                 $post->team_id = $request->get('team_id');
@@ -177,6 +189,6 @@ class EventController extends Controller
 
     public function getUserEvents(){
         $id = Auth::user()->id;
-        return response()->json(Post::where('author_id', $id)->whereNotNull('event_id')->get());
+        return response()->json(Post::where('author_id', $id)->with('event')->whereNotNull('event_id')->get());
     }
 }
