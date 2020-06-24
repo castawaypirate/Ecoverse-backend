@@ -56,7 +56,7 @@ class EventController extends Controller
             'author_id' => Auth::user()->id,
             'title' => $request->get('title'),
             'content'=>$request->get('content'),
-            'public'=>$request->has('public'),
+            'public'=>$request->get('public') == 'true' ? 1 : 0,
             'image'=>$request->get('image'),
             'team_id'=>$request->get('team_id')
         ]);
@@ -84,7 +84,17 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        return response()->json(Event::find($id));
+        $user = auth('api')->user();
+        if ($user) {
+            $event = Event::whereHas('posts', function($q) use ($user) {
+                $q->where('posts.author_id', $user->id)->orWhere('posts.public', 1);
+            });
+        } else {
+            $event = Event::whereHas('posts', function($q) {
+                $q->where('posts.public', 1);
+            });
+        }
+        return response()->json($event->find($id));
     }
 
     /**
@@ -124,7 +134,7 @@ class EventController extends Controller
             $post->content = $request->get('content');
             $post->title = $request->get('title');
             if ($request->has('public')) {
-                $post->public = $request->has('public');
+                $post->public = $request->public == 'true' ? 1 : 0;
             }
             if ($request->has('image')) {
                 $post->image = $request->get('image');

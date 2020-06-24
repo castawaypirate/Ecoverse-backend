@@ -67,13 +67,13 @@ class TeamController extends Controller
             'name'          => ['required'],
             'description'   => ['required'],
             'public'   => ['required'],
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'image|nullable||mimes:jpeg,png,jpg,gif,svg|max:204'
         ]);
 
         $team = new Team();
         $team->name = $request->name;
         $team->description = $request->description;
-        $team->public = $request->public;
+        $team->public = $request->public == 'true' ? 1 : 0;
 
         if ($request->has('image')) {
             $image = $request->file('image');
@@ -107,7 +107,7 @@ class TeamController extends Controller
     {
         $request->validate([
             'public' => 'boolean',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'image|nullable||mimes:jpeg,png,jpg,gif,svg|max:204'
         ]);
 
         $team = Team::find($team_id);
@@ -121,7 +121,7 @@ class TeamController extends Controller
         }
 
         if (isset($request->public)) {
-            $team->public = $request->public;
+            $team->public = $request->public ? 1 : 0;
         }
 
         if ($request->has('image')) {

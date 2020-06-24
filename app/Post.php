@@ -16,6 +16,10 @@ class Post extends Model
         'public'
     ];
 
+    protected $casts = [
+        'public' => 'boolean'
+    ];
+
     protected $appends = ['likes_users_ids'];
 
     public function comments() {

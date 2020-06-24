@@ -25,7 +25,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::withCount('likes')->with('event')->orderBy('created_at', 'desc')->get();
+        $posts = Post::withCount('likes')->with('event')->where('public', '1')->orderBy('created_at', 'desc')->get();
         return response()->json($posts);
     }
 
@@ -46,7 +46,7 @@ class PostController extends Controller
         $post = new Post([
             'title'=>$request->title,
             'content'=>$request->content,
-            'public'=> $request->public,
+            'public'=> $request->public ? 1 : 0,
             'image'=>$request->image,
             'author_id'=>$user->id,
         ]);
@@ -77,14 +77,14 @@ class PostController extends Controller
         $request->validate([
             'content'=>'required',
             'title'=>'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'image|nullable|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         $post = new Post([
             'author_id'=>Auth::user()->id,
             'content'=>$request->get('content'),
             'title'=>$request->get('title'),
-            'public'=> $request->get('public')
+            'public'=> $request->get('public') == 'true' ? 1 : 0
         ]);
 
         if ($request->has('image')) {
@@ -108,12 +108,23 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::with(['comments' => function ($q) {
-            return $q->where('comments.comment_id', null)->orderBy('created_at', 'desc');
-        }, 'comments.comments.author' => function ($q) {
-            return $q->orderBy('created_at', 'desc');
-        }, 'comments.author'])->withCount('likes')->find($id);
-        return response()->json($post);
+        $user = auth('api')->user();
+        if ($user) {
+            $post = Post::where('id', $id)->where( function ($q) use ($user) {
+                $q->where('author_id', $user->id)->orWhere('public', 1);
+            })->with(['comments' => function ($q) {
+                return $q->where('comments.comment_id', null)->orderBy('created_at', 'desc');
+            }, 'comments.comments.author' => function ($q) {
+                return $q->orderBy('created_at', 'desc');
+            }, 'comments.author'])->withCount('likes');
+        } else {
+            $post = Post::where('id', $id)->where('public', 1)->with(['comments' => function ($q) {
+                return $q->where('comments.comment_id', null)->orderBy('created_at', 'desc');
+            }, 'comments.comments.author' => function ($q) {
+                return $q->orderBy('created_at', 'desc');
+            }, 'comments.author'])->withCount('likes');
+        }
+        return response()->json($post->first());
     }
 
     /**
@@ -140,18 +151,17 @@ class PostController extends Controller
         $request->validate([
             'content' => 'required',
             'title'=> 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'image|nullable|mimes:jpeg,png,jpg,gif,svg|max:204'
         ]);
 
         $post = Post::find($id);
         if (Auth::user()->id == $post->author_id) {
             $post->content = $request->get('content');
-            //$post->author_id = Auth::user()->id;
             $post->title = $request->get('title');
             if ($request->has('public')) {
-                $post->public = $request->get('public');
+                $post->public = $request->public == 'true' ? 1 : 0;
             }
-            if ($request->has('image')) {
+            if ($request->has('image') && $request->image) {
                 $image = $request->file('image');
                 $name = time().'.'.$image->getClientOriginalExtension();
                 $destinationPath = public_path('/images');
