@@ -11,3 +11,15 @@
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
+
+#phpmyadmin
+public/[pP][hH][pP][mM][yY][aA][dD][mM][iI][nN]
+
+Homestead.json
+.vagrant
+
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
+public/images

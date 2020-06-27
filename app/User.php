@@ -2,13 +2,14 @@
 
 namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -25,15 +26,37 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'pivot'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function data()
+    {
+        return $this->hasOne(UserData::class);
+    }
+
+    public function teams() {
+        return $this->belongsToMany(Team::class, 'team_members', 'user_id', 'team_id');
+    }
+
+    public function team($team_id) {
+        return $this->teams()->wherePivot('team_id', '=', $team_id);
+    }
+
+    public function teamRoles() {
+        return $this->belongsToMany(MemberRole::class, 'team_members', 'user_id', 'role_id');
+    }
+
+    public function teamRole($team_id) {
+        return $this->teamRoles()->wherePivot('team_id', '=', $team_id)->first();
+    }
+
+    public function likes() {
+        return $this->hasMany(Like::class);
+    }
+
+    public function likesPost($post_id) {
+        return $this->whereHas('likes', function (Builder $q) use ($post_id) {
+            $q->where('post_id', $post_id);
+        })->first() ? true : false;
+    }
 }

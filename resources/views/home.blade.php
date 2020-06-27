@@ -16,7 +16,6 @@
 
                     You are logged in!
 
-
                     {{-- {{ var_dump($friends) }} --}}
 {{--
                     @foreach ($friends as $friend)
